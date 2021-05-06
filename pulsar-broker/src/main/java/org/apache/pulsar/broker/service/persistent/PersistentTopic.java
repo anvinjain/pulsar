@@ -2859,6 +2859,12 @@ public class PersistentTopic extends AbstractTopic
             }
         });
 
+        subscriptions.forEach((subName, sub) -> {
+            sub.getConsumers().forEach(Consumer::checkPermissions);
+            Dispatcher dispatcher = sub.getDispatcher();
+            dispatcher.updateRateLimiter(policies.getSubscriptionDispatchRate());
+        });
+
         HashMap<String, DispatchRate> dispatchRateHashMap = policies.getSubscriptionDispatchRatePerSubscription();
         if (dispatchRateHashMap != null){
             subscriptions.forEach((subName, sub) -> {
@@ -2867,12 +2873,6 @@ public class PersistentTopic extends AbstractTopic
                     Dispatcher dispatcher = sub.getDispatcher();
                     dispatcher.updateRateLimiter(dispatchRateHashMap.getOrDefault(subName,policies.getSubscriptionDispatchRate()));
                 }
-            });
-        } else {
-            subscriptions.forEach((subName, sub) -> {
-                sub.getConsumers().forEach(Consumer::checkPermissions);
-                Dispatcher dispatcher = sub.getDispatcher();
-                dispatcher.updateRateLimiter(policies.getSubscriptionDispatchRate());
             });
         }
 

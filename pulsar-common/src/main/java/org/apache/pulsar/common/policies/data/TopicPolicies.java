@@ -65,15 +65,6 @@ public class TopicPolicies {
     private SubscribeRate subscribeRate = null;
     private HashMap<String, SubscribeRate> subscribeRatePerConsumer = Maps.newHashMap();
     private HashMap<String, DispatchRate> subscriptionDispatchRatePerSubscription = Maps.newHashMap();
-
-    public HashMap<String, DispatchRate> getSubscriptionDispatchRatePerSubscription() {
-        return subscriptionDispatchRatePerSubscription;
-    }
-
-    public void setSubscriptionDispatchRatePerSubscription(HashMap<String, DispatchRate> subscriptionDispatchRatePerSubscription) {
-        this.subscriptionDispatchRatePerSubscription = subscriptionDispatchRatePerSubscription;
-    }
-
     private Integer deduplicationSnapshotIntervalSeconds = null;
     private Integer maxMessageSize = null;
     private Integer maxSubscriptionsPerTopic = null;
