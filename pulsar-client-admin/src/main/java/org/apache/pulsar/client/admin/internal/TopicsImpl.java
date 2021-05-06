@@ -2580,7 +2580,7 @@ public class TopicsImpl extends BaseResource implements Topics {
     @Override
     public CompletableFuture<Void> setSubscriptionDispatchRateAsync(String topic, DispatchRate dispatchRate, String subName) {
         TopicName topicName = validateTopic(topic);
-        WebTarget path = topicPath(topicName, "{subName}/subscriptionDispatchRatePerSubscription");
+        WebTarget path = topicPath(topicName, subName, "subscriptionDispatchRatePerSubscription");
         return asyncPostRequest(path, Entity.entity(dispatchRate, MediaType.APPLICATION_JSON));
     }
 
