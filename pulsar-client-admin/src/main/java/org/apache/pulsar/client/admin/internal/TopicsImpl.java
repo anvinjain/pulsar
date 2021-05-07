@@ -2564,6 +2564,62 @@ public class TopicsImpl extends BaseResource implements Topics {
     }
 
     @Override
+    public DispatchRate getSubscriptionDispatchRate(String topic, String subName) throws PulsarAdminException {
+        try {
+            return getSubscriptionDispatchRateAsync(topic, subName).get(this.readTimeoutMs, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException e) {
+            throw (PulsarAdminException) e.getCause();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new PulsarAdminException(e);
+        } catch (TimeoutException e) {
+            throw new PulsarAdminException.TimeoutException(e);
+        }
+    }
+
+    @Override
+    public CompletableFuture<DispatchRate> getSubscriptionDispatchRateAsync(String topic, String subName) {
+        TopicName topicName = validateTopic(topic);
+        WebTarget path = topicPath(topicName, subName, "subscriptionDispatchRateOfSubscription");
+        final CompletableFuture<DispatchRate> future = new CompletableFuture<>();
+        asyncGetRequest(path,
+                new InvocationCallback<DispatchRate>() {
+                    @Override
+                    public void completed(DispatchRate dispatchRate) {
+                        future.complete(dispatchRate);
+                    }
+
+                    @Override
+                    public void failed(Throwable throwable) {
+                        future.completeExceptionally(getApiException(throwable.getCause()));
+                    }
+                });
+        return future;
+    }
+
+    @Override
+    public void setSubscriptionDispatchRate(String topic, DispatchRate dispatchRate, String subName) throws PulsarAdminException {
+        try {
+            setSubscriptionDispatchRateAsync(topic, dispatchRate, subName).get(this.readTimeoutMs, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException e) {
+            throw (PulsarAdminException) e.getCause();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new PulsarAdminException(e);
+        } catch (TimeoutException e) {
+            throw new PulsarAdminException.TimeoutException(e);
+        }
+    }
+
+    @Override
+    public CompletableFuture<Void> setSubscriptionDispatchRateAsync(String topic, DispatchRate dispatchRate, String subName) {
+        TopicName topicName = validateTopic(topic);
+        WebTarget path = topicPath(topicName, subName, "subscriptionDispatchRatePerSubscription");
+        return asyncPostRequest(path, Entity.entity(dispatchRate, MediaType.APPLICATION_JSON));
+    }
+
+
+    @Override
     public void removeSubscriptionDispatchRate(String topic) throws PulsarAdminException {
         try {
             removeSubscriptionDispatchRateAsync(topic).get(this.readTimeoutMs, TimeUnit.MILLISECONDS);
@@ -3434,8 +3490,27 @@ public class TopicsImpl extends BaseResource implements Topics {
         }
     }
 
+    public void setSubscribeRate(String topic, String subscriptionName, SubscribeRate subscribeRate) throws PulsarAdminException {
+        try {
+            setSubscribeRateAsync(topic, subscribeRate).get(this.readTimeoutMs, TimeUnit.MILLISECONDS);
+        } catch (ExecutionException e) {
+            throw (PulsarAdminException) e.getCause();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new PulsarAdminException(e);
+        } catch (TimeoutException e) {
+            throw new PulsarAdminException.TimeoutException(e);
+        }
+    }
+
     @Override
     public CompletableFuture<Void> setSubscribeRateAsync(String topic, SubscribeRate subscribeRate) {
+        TopicName topicName = validateTopic(topic);
+        WebTarget path = topicPath(topicName, "subscribeRate");
+        return asyncPostRequest(path, Entity.entity(subscribeRate, MediaType.APPLICATION_JSON));
+    }
+
+    public CompletableFuture<Void> setSubscribeRateAsync(String topic, String subscriptionName, SubscribeRate subscribeRate) {
         TopicName topicName = validateTopic(topic);
         WebTarget path = topicPath(topicName, "subscribeRate");
         return asyncPostRequest(path, Entity.entity(subscribeRate, MediaType.APPLICATION_JSON));

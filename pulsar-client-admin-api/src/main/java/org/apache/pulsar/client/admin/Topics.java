@@ -2445,6 +2445,62 @@ public interface Topics {
     CompletableFuture<Void> setSubscriptionDispatchRateAsync(String topic, DispatchRate dispatchRate);
 
     /**
+     * Set subscription-message-dispatch-rate for a subscription of the topic.
+     * <p/>
+     * Subscriptions under this namespace can dispatch this many messages per second
+     *
+     * @param topic
+     * @param dispatchRate
+     *            number of messages per second
+     * @param subName
+     *            Subscription name
+     * @throws PulsarAdminException
+     *             Unexpected error
+     */
+    void setSubscriptionDispatchRate(String topic, DispatchRate dispatchRate, String subName) throws PulsarAdminException;
+
+    /**
+     * Set subscription-message-dispatch-rate for a subscription of the topic asynchronously.
+     * <p/>
+     * Subscriptions under this namespace can dispatch this many messages per second.
+     *
+     * @param topic
+     * @param dispatchRate
+     *            number of messages per second
+     * @param subName
+     *            Subscription name
+     */
+    CompletableFuture<Void> setSubscriptionDispatchRateAsync(String topic, DispatchRate dispatchRate, String subName);
+
+    /**
+     * Get subscription-message-dispatch-rate for the topic.
+     * <p/>
+     * Subscriptions under this namespace can dispatch this many messages per second.
+     *
+     * @param topic
+     * @param subName
+     * @returns DispatchRate
+     *            number of messages per second
+     * @throws PulsarAdminException
+     *             Unexpected error
+     */
+    DispatchRate getSubscriptionDispatchRate(String topic, String subName) throws PulsarAdminException;
+
+    /**
+     * Get subscription-message-dispatch-rate asynchronously.
+     * <p/>
+     * Subscriptions under this namespace can dispatch this many messages per second.
+     *
+     * @param topic
+     * @param subName
+     * @returns DispatchRate
+     *            number of messages per second
+     */
+    CompletableFuture<DispatchRate> getSubscriptionDispatchRateAsync(String topic, String subName);
+
+
+
+    /**
      * Get applied subscription-message-dispatch-rate.
      * <p/>
      * Subscriptions under this namespace can dispatch this many messages per second.
