@@ -159,7 +159,8 @@ public class CmdTopics extends CmdBase {
         jcommander.addCommand("set-subscription-dispatch-rate", new SetSubscriptionDispatchRate());
         jcommander.addCommand("remove-subscription-dispatch-rate", new RemoveSubscriptionDispatchRate());
 
-        jcommander.addCommand("set-subscription-dispatch-rate-for-subscription", new SetSubscriptionDispatchRatePerSubscription());
+        jcommander.addCommand("get-dispatch-rate-for-subscription", new GetSubscriptionDispatchRatePerSubscription());
+        jcommander.addCommand("set-dispatch-rate-for-subscription", new SetSubscriptionDispatchRatePerSubscription());
 
         jcommander.addCommand("get-replicator-dispatch-rate", new GetReplicatorDispatchRate());
         jcommander.addCommand("set-replicator-dispatch-rate", new SetReplicatorDispatchRate());
@@ -1878,6 +1879,22 @@ public class CmdTopics extends CmdBase {
         }
     }
 
+    @Parameters(commandDescription = "Get subscription message-dispatch-rate for a subscription of a topic")
+    private class GetSubscriptionDispatchRatePerSubscription extends CliCommand {
+        @Parameter(description = "persistent://tenant/namespace/topic", required = true)
+        private java.util.List<String> params;
+
+        @Parameter(names = { "-s",
+                "--subscription" }, description = "Name of subscription to get dispatch rate", required = true)
+        private List<String> subName;
+
+        @Override
+        void run() throws PulsarAdminException {
+            String persistentTopic = validatePersistentTopic(params);
+            String subscriptionName = validateSubscriptionName(subName);
+            print(getTopics().getSubscriptionDispatchRate(persistentTopic, subscriptionName));
+        }
+    }
 
     @Parameters(commandDescription = "Set subscription message-dispatch-rate for a subscription of a topic")
     private class SetSubscriptionDispatchRatePerSubscription extends CliCommand {

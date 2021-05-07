@@ -2663,6 +2663,36 @@ public class PersistentTopics extends PersistentTopicsBase {
         });
     }
 
+    @GET
+    @Path("/{tenant}/{namespace}/{topic}/{subName}/subscriptionDispatchRateOfSubscription/{subName}")
+    @ApiOperation(value = "Get subscription message dispatch rate configuration for specified subscription of " +
+            "given topic.")
+    @ApiResponses(value = {@ApiResponse(code = 403, message = "Don't have admin permission"),
+            @ApiResponse(code = 404, message = "Topic does not exist"),
+            @ApiResponse(code = 405,
+                    message = "Topic level policy is disabled, please enable the topic level policy and retry"),
+            @ApiResponse(code = 409, message = "Concurrent modification")})
+    public void getSubscriptionDispatchRateOfSubscription(@Suspended final AsyncResponse asyncResponse,
+                                                          @PathParam("tenant") String tenant,
+                                                          @PathParam("namespace") String namespace,
+                                                          @PathParam("topic") @Encoded String encodedTopic,
+                                                          @PathParam("subName") String subName) {
+        validateTopicName(tenant, namespace, encodedTopic);
+        preValidation();
+        internalGetSubscriptionDispatchRatePerSubscription().whenComplete((res, ex) -> {
+            if (ex instanceof RestException) {
+                log.error("Failed get subscription dispatchRate", ex);
+                asyncResponse.resume(ex);
+            } else if (ex != null) {
+                log.error("Failed get subscription dispatchRate", ex);
+                asyncResponse.resume(new RestException(ex));
+            } else {
+                asyncResponse.resume(res);
+            }
+        });
+    }
+
+
     @POST
     @Path("/{tenant}/{namespace}/{topic}/{subName}/subscriptionDispatchRatePerSubscription")
     @ApiOperation(value = "Set subscription message dispatch rate configuration for specified topic. and specified subscription")
