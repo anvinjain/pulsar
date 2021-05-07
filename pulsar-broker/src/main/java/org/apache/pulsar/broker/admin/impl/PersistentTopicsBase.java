@@ -3755,9 +3755,9 @@ public class PersistentTopicsBase extends AdminResource {
         return CompletableFuture.completedFuture(dispatchRate);
     }
 
-    protected CompletableFuture<HashMap<String,DispatchRate>> internalGetSubscriptionDispatchRatePerSubscription() {
-        HashMap<String, DispatchRate> subscriptionDispatchRatePerSubscription = getTopicPolicies(topicName)
-                .map(TopicPolicies::getSubscriptionDispatchRatePerSubscription)
+    protected CompletableFuture<DispatchRate> internalGetSubscriptionDispatchRatePerSubscription(String subName) {
+        DispatchRate subscriptionDispatchRatePerSubscription = getTopicPolicies(topicName)
+                .map(policy -> policy.getSubscriptionDispatchRatePerSubscription().getOrDefault(subName, null))
                 .orElse(null);
         return CompletableFuture.completedFuture(subscriptionDispatchRatePerSubscription);
     }
