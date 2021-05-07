@@ -2664,7 +2664,7 @@ public class PersistentTopics extends PersistentTopicsBase {
     }
 
     @GET
-    @Path("/{tenant}/{namespace}/{topic}/{subName}/subscriptionDispatchRateOfSubscription/{subName}")
+    @Path("/{tenant}/{namespace}/{topic}/{subName}/subscriptionDispatchRateOfSubscription")
     @ApiOperation(value = "Get subscription message dispatch rate configuration for specified subscription of " +
             "given topic.")
     @ApiResponses(value = {@ApiResponse(code = 403, message = "Don't have admin permission"),
