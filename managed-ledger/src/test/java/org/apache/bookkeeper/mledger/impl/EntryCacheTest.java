@@ -39,8 +39,10 @@ import org.apache.bookkeeper.client.BKException.BKNoSuchLedgerExistsException;
 import org.apache.bookkeeper.client.api.LedgerEntries;
 import org.apache.bookkeeper.client.api.LedgerEntry;
 import org.apache.bookkeeper.client.api.ReadHandle;
+import org.apache.bookkeeper.mledger.AsyncCallbacks;
 import org.apache.bookkeeper.mledger.AsyncCallbacks.ReadEntriesCallback;
 import org.apache.bookkeeper.mledger.Entry;
+import org.apache.bookkeeper.mledger.ManagedCursor;
 import org.apache.bookkeeper.mledger.ManagedLedgerException;
 import org.apache.bookkeeper.test.MockedBookKeeperTestCase;
 import org.mockito.Mockito;
@@ -75,7 +77,7 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
         final CountDownLatch counter = new CountDownLatch(1);
 
-        entryCache.asyncReadEntry(lh, 0, 9, false, new ReadEntriesCallback() {
+        entryCache.asyncReadEntry(lh, 0, 9, false, new AsyncCallbacks.CursorAwareReadEntriesCallback() {
             public void readEntriesComplete(List<Entry> entries, Object ctx) {
                 assertEquals(entries.size(), 10);
                 entries.forEach(e -> e.release());
@@ -84,6 +86,11 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
             public void readEntriesFailed(ManagedLedgerException exception, Object ctx) {
                 Assert.fail("should not have failed");
+            }
+
+            @Override
+            public ManagedCursor getCursor() {
+                return null;
             }
         }, null);
         counter.await();
@@ -107,7 +114,7 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
         final CountDownLatch counter = new CountDownLatch(1);
 
-        entryCache.asyncReadEntry(lh, 0, 9, false, new ReadEntriesCallback() {
+        entryCache.asyncReadEntry(lh, 0, 9, false, new AsyncCallbacks.CursorAwareReadEntriesCallback() {
             public void readEntriesComplete(List<Entry> entries, Object ctx) {
                 assertEquals(entries.size(), 10);
                 counter.countDown();
@@ -115,6 +122,11 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
             public void readEntriesFailed(ManagedLedgerException exception, Object ctx) {
                 Assert.fail("should not have failed");
+            }
+
+            @Override
+            public ManagedCursor getCursor() {
+                return null;
             }
         }, null);
         counter.await();
@@ -135,7 +147,7 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
         final CountDownLatch counter = new CountDownLatch(1);
 
-        entryCache.asyncReadEntry(lh, 0, 9, false, new ReadEntriesCallback() {
+        entryCache.asyncReadEntry(lh, 0, 9, false, new AsyncCallbacks.CursorAwareReadEntriesCallback() {
             public void readEntriesComplete(List<Entry> entries, Object ctx) {
                 assertEquals(entries.size(), 10);
                 counter.countDown();
@@ -143,6 +155,11 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
             public void readEntriesFailed(ManagedLedgerException exception, Object ctx) {
                 Assert.fail("should not have failed");
+            }
+
+            @Override
+            public ManagedCursor getCursor() {
+                return null;
             }
         }, null);
         counter.await();
@@ -164,7 +181,7 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
         final CountDownLatch counter = new CountDownLatch(1);
 
-        entryCache.asyncReadEntry(lh, 0, 9, false, new ReadEntriesCallback() {
+        entryCache.asyncReadEntry(lh, 0, 9, false, new AsyncCallbacks.CursorAwareReadEntriesCallback() {
             public void readEntriesComplete(List<Entry> entries, Object ctx) {
                 assertEquals(entries.size(), 10);
                 counter.countDown();
@@ -172,6 +189,11 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
             public void readEntriesFailed(ManagedLedgerException exception, Object ctx) {
                 Assert.fail("should not have failed");
+            }
+
+            @Override
+            public ManagedCursor getCursor() {
+                return null;
             }
         }, null);
         counter.await();
@@ -193,7 +215,7 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
         final CountDownLatch counter = new CountDownLatch(1);
 
-        entryCache.asyncReadEntry(lh, 0, 9, false, new ReadEntriesCallback() {
+        entryCache.asyncReadEntry(lh, 0, 9, false, new AsyncCallbacks.CursorAwareReadEntriesCallback() {
             public void readEntriesComplete(List<Entry> entries, Object ctx) {
                 assertEquals(entries.size(), 10);
                 counter.countDown();
@@ -201,6 +223,11 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
             public void readEntriesFailed(ManagedLedgerException exception, Object ctx) {
                 Assert.fail("should not have failed");
+            }
+
+            @Override
+            public ManagedCursor getCursor() {
+                return null;
             }
         }, null);
         counter.await();
@@ -225,13 +252,18 @@ public class EntryCacheTest extends MockedBookKeeperTestCase {
 
         final CountDownLatch counter = new CountDownLatch(1);
 
-        entryCache.asyncReadEntry(lh, 0, 9, false, new ReadEntriesCallback() {
+        entryCache.asyncReadEntry(lh, 0, 9, false, new AsyncCallbacks.CursorAwareReadEntriesCallback() {
             public void readEntriesComplete(List<Entry> entries, Object ctx) {
                 Assert.fail("should not complete");
             }
 
             public void readEntriesFailed(ManagedLedgerException exception, Object ctx) {
                 counter.countDown();
+            }
+
+            @Override
+            public ManagedCursor getCursor() {
+                return null;
             }
         }, null);
         counter.await();

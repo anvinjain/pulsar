@@ -232,6 +232,11 @@ public class ManagedLedgerMBeanImpl implements ManagedLedgerMXBean {
     }
 
     @Override
+    public long getEntryCacheSize() {
+        return managedLedger.getCacheSize();
+    }
+
+    @Override
     public double getAddEntryLatencyAverageUsec() {
         return addEntryLatencyStatsUsec.getAvg();
     }

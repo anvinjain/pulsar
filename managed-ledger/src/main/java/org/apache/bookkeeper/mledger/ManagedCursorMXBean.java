@@ -51,6 +51,13 @@ public interface ManagedCursorMXBean {
     void persistToZookeeper(boolean success);
 
     /**
+     * bytes read
+     * @param bytes
+     * @param remote
+     */
+    void bytesRead(long bytes, boolean remote);
+
+    /**
      * @return the number of persist cursor by ledger that succeed
      */
     long getPersistLedgerSucceed();
@@ -69,5 +76,9 @@ public interface ManagedCursorMXBean {
      * @return the number of persist cursor by zookeeper that failed
      */
     long getPersistZookeeperErrors();
+
+    double getTotalReadBytesRate();
+
+    double getRemoteReadBytesRate();
 
 }

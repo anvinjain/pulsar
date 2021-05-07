@@ -367,6 +367,7 @@ public class DispatchRateLimiter {
                 this.dispatchRateLimiterOnByte.setRate(byteRate, dispatchRate.ratePeriodInSecond,
                         TimeUnit.SECONDS, permitUpdaterByte);
             }
+            log.info("New byte dispatch rate for topic {} is {}", topicName, this.dispatchRateLimiterOnByte);
         } else {
             // message-rate should be disable and close
             if (this.dispatchRateLimiterOnByte != null) {
@@ -374,6 +375,7 @@ public class DispatchRateLimiter {
                 this.dispatchRateLimiterOnByte = null;
             }
         }
+        Thread.dumpStack();
     }
 
     private long getRelativeDispatchRateInMsg(DispatchRate dispatchRate) {

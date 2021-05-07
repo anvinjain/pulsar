@@ -83,6 +83,10 @@ public interface AsyncCallbacks {
         void readEntriesFailed(ManagedLedgerException exception, Object ctx);
     }
 
+    interface CursorAwareReadEntriesCallback extends ReadEntriesCallback {
+        ManagedCursor getCursor();
+    }
+
     interface ReadEntryCallback {
         void readEntryComplete(Entry entry, Object ctx);
 

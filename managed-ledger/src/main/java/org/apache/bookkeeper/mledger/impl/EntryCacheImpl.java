@@ -35,6 +35,7 @@ import java.util.List;
 import org.apache.bookkeeper.client.api.BKException;
 import org.apache.bookkeeper.client.api.LedgerEntry;
 import org.apache.bookkeeper.client.api.ReadHandle;
+import org.apache.bookkeeper.mledger.AsyncCallbacks;
 import org.apache.bookkeeper.mledger.AsyncCallbacks.ReadEntriesCallback;
 import org.apache.bookkeeper.mledger.AsyncCallbacks.ReadEntryCallback;
 import org.apache.bookkeeper.mledger.ManagedLedgerException;
@@ -246,7 +247,7 @@ public class EntryCacheImpl implements EntryCache {
 
     @Override
     public void asyncReadEntry(ReadHandle lh, long firstEntry, long lastEntry, boolean isSlowestReader,
-            final ReadEntriesCallback callback, Object ctx) {
+                               final AsyncCallbacks.CursorAwareReadEntriesCallback callback, Object ctx) {
         try {
             asyncReadEntry0(lh, firstEntry, lastEntry, isSlowestReader, callback, ctx);
         } catch (Throwable t) {
@@ -261,7 +262,7 @@ public class EntryCacheImpl implements EntryCache {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     private void asyncReadEntry0(ReadHandle lh, long firstEntry, long lastEntry, boolean isSlowestReader,
-            final ReadEntriesCallback callback, Object ctx) {
+                                 final AsyncCallbacks.CursorAwareReadEntriesCallback callback, Object ctx) {
         final long ledgerId = lh.getId();
         final int entriesToRead = (int) (lastEntry - firstEntry) + 1;
         final PositionImpl firstPosition = PositionImpl.get(lh.getId(), firstEntry);
@@ -285,6 +286,9 @@ public class EntryCacheImpl implements EntryCache {
             }
 
             manager.mlFactoryMBean.recordCacheHits(entriesToReturn.size(), totalCachedSize);
+            if(callback.getCursor() != null) {
+                callback.getCursor().getStats().bytesRead(totalCachedSize, false);
+            }
             if (log.isDebugEnabled()) {
                 log.debug("[{}] Ledger {} -- Found in cache entries: {}-{}", ml.getName(), ledgerId, firstEntry,
                         lastEntry);
@@ -328,6 +332,9 @@ public class EntryCacheImpl implements EntryCache {
                             }
 
                             manager.mlFactoryMBean.recordCacheMiss(entriesToReturn.size(), totalSize);
+                            if (callback.getCursor() != null) {
+                                callback.getCursor().getStats().bytesRead(totalSize, true);
+                            }
                             ml.getMBean().addReadEntriesSample(entriesToReturn.size(), totalSize);
 
                             callback.readEntriesComplete((List) entriesToReturn, ctx);

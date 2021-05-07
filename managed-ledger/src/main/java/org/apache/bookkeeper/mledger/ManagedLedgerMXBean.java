@@ -96,6 +96,8 @@ public interface ManagedLedgerMXBean {
 
     long[] getEntrySizeBuckets();
 
+    long getEntryCacheSize();
+
     // Add entry latency statistics
 
     double getAddEntryLatencyAverageUsec();

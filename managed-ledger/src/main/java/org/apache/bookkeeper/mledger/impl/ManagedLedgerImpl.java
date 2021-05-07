@@ -1885,10 +1885,10 @@ public class ManagedLedgerImpl implements ManagedLedger, CreateCallback {
         }
     }
 
-    static final class ReadEntryCallbackWrapper implements ReadEntryCallback, ReadEntriesCallback {
+    static final class ReadEntryCallbackWrapper implements ReadEntryCallback, AsyncCallbacks.CursorAwareReadEntriesCallback {
 
         volatile ReadEntryCallback readEntryCallback;
-        volatile ReadEntriesCallback readEntriesCallback;
+        volatile AsyncCallbacks.CursorAwareReadEntriesCallback readEntriesCallback;
         String name;
         long ledgerId;
         long entryId;
@@ -1917,7 +1917,7 @@ public class ManagedLedgerImpl implements ManagedLedger, CreateCallback {
             return readCallback;
         }
 
-        static ReadEntryCallbackWrapper create(String name, long ledgerId, long entryId, ReadEntriesCallback callback,
+        static ReadEntryCallbackWrapper create(String name, long ledgerId, long entryId, AsyncCallbacks.CursorAwareReadEntriesCallback callback,
                 long readOpCount, long createdTime, Object ctx) {
             ReadEntryCallbackWrapper readCallback = RECYCLER.get();
             readCallback.name = name;
@@ -1993,6 +1993,11 @@ public class ManagedLedgerImpl implements ManagedLedger, CreateCallback {
                 }
                 return;
             }
+        }
+
+        @Override
+        public ManagedCursor getCursor() {
+            return readEntriesCallback.getCursor();
         }
 
         private long reOpCount(Object ctx) {
