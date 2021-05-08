@@ -20,7 +20,9 @@ package org.apache.bookkeeper.mledger.impl;
 
 import org.apache.bookkeeper.mledger.ManagedCursor;
 import org.apache.bookkeeper.mledger.ManagedCursorMXBean;
+import org.apache.pulsar.common.stats.Rate;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
 public class ManagedCursorMXBeanImpl implements ManagedCursorMXBean {
@@ -30,6 +32,9 @@ public class ManagedCursorMXBeanImpl implements ManagedCursorMXBean {
 
     private final LongAdder persistZookeeperSucceed = new LongAdder();
     private final LongAdder persistZookeeperFailed = new LongAdder();
+
+    private final Rate remoteReadBytes = new Rate();
+    private final Rate totalReadBytes = new Rate();
 
     private final ManagedCursor managedCursor;
 
@@ -66,6 +71,14 @@ public class ManagedCursorMXBeanImpl implements ManagedCursorMXBean {
     }
 
     @Override
+    public void bytesRead(long bytes, boolean remote) {
+        totalReadBytes.recordEvent(bytes);
+        if (remote) {
+            remoteReadBytes.recordEvent(bytes);
+        }
+    }
+
+    @Override
     public long getPersistLedgerSucceed() {
         return persistLedgeSucceed.longValue();
     }
@@ -83,5 +96,22 @@ public class ManagedCursorMXBeanImpl implements ManagedCursorMXBean {
     @Override
     public long getPersistZookeeperErrors() {
         return persistZookeeperFailed.longValue();
+    }
+
+    @Override
+    public double getTotalReadBytesRate() {
+        return totalReadBytes.getValueRate();
+    }
+
+    @Override
+    public double getRemoteReadBytesRate() {
+        return remoteReadBytes.getValueRate();
+    }
+
+
+    public void refreshStats(long period, TimeUnit unit) {
+        double seconds = unit.toMillis(period) / 1000.0;
+        totalReadBytes.calculateRate(seconds);
+        remoteReadBytes.calculateRate(seconds);
     }
 }

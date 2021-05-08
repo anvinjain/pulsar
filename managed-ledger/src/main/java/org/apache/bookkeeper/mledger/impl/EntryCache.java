@@ -19,6 +19,7 @@
 package org.apache.bookkeeper.mledger.impl;
 
 import org.apache.bookkeeper.client.api.ReadHandle;
+import org.apache.bookkeeper.mledger.AsyncCallbacks;
 import org.apache.bookkeeper.mledger.AsyncCallbacks.ReadEntriesCallback;
 import org.apache.bookkeeper.mledger.AsyncCallbacks.ReadEntryCallback;
 import org.apache.commons.lang3.tuple.Pair;
@@ -97,7 +98,7 @@ public interface EntryCache extends Comparable<EntryCache> {
      *            the context object
      */
     void asyncReadEntry(ReadHandle lh, long firstEntry, long lastEntry, boolean isSlowestReader,
-            ReadEntriesCallback callback, Object ctx);
+                        AsyncCallbacks.CursorAwareReadEntriesCallback callback, Object ctx);
 
     /**
      * Read entry at given position from the cache or from bookkeeper.

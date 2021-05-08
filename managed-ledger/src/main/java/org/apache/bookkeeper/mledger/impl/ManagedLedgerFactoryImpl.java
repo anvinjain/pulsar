@@ -249,6 +249,11 @@ public class ManagedLedgerFactoryImpl implements ManagedLedgerFactory {
                 ManagedLedgerImpl ml = mlfuture.getNow(null);
                 if (ml != null) {
                     ml.mbean.refreshStats(period, TimeUnit.NANOSECONDS);
+                    ml.getCursors().forEach(cursor -> {
+                        if (cursor.getStats() instanceof ManagedCursorMXBeanImpl) {
+                            ((ManagedCursorMXBeanImpl)cursor.getStats()).refreshStats(period, TimeUnit.NANOSECONDS);
+                        }
+                    });
                 }
             }
         });

@@ -23,16 +23,16 @@ import com.google.common.collect.Lists;
 import io.netty.util.Recycler;
 import io.netty.util.Recycler.Handle;
 import java.util.List;
+
+import org.apache.bookkeeper.mledger.*;
 import org.apache.bookkeeper.mledger.AsyncCallbacks.ReadEntriesCallback;
-import org.apache.bookkeeper.mledger.Entry;
-import org.apache.bookkeeper.mledger.ManagedLedgerException;
+import org.apache.bookkeeper.mledger.AsyncCallbacks.CursorAwareReadEntriesCallback;
 import org.apache.bookkeeper.mledger.ManagedLedgerException.NonRecoverableLedgerException;
 import org.apache.bookkeeper.mledger.ManagedLedgerException.TooManyRequestsException;
-import org.apache.bookkeeper.mledger.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class OpReadEntry implements ReadEntriesCallback {
+class OpReadEntry implements CursorAwareReadEntriesCallback {
 
     ManagedCursorImpl cursor;
     PositionImpl readPosition;
@@ -126,6 +126,11 @@ class OpReadEntry implements ReadEntriesCallback {
             cursor.ledger.mbean.recordReadEntriesError();
             recycle();
         }
+    }
+
+    @Override
+    public ManagedCursor getCursor() {
+        return cursor;
     }
 
     void updateReadPosition(Position newReadPosition) {
